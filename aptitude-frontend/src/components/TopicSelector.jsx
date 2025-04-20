@@ -16,6 +16,7 @@ const TopicSelector = () => {
       .catch((err) => console.error('Failed to fetch Topics', err));
   }, []);
 //   if (loading) return <p>Loading topics...</p>;
+  // console.log(res.data);
   const handleSelect = (topic) => {
     setSelectedTopic(topic); // ✅ Using context to set it globally
     navigate('/level');      // ✅ Navigate to level selection

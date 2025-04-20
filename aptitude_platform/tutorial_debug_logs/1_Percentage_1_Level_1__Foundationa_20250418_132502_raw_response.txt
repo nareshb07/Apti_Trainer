@@ -1,0 +1,222 @@
+```json
+{
+  "tutorial_parts": [
+    {
+      "part_title": "Understanding Percentages",
+      "sections": {
+        "explanation": "A percentage is a way of expressing a number as a fraction of 100. It is denoted by the symbol %. To convert a fraction to a percentage, multiply it by 100. For example, $$\frac{1}{2} = 50\%$$.",
+        "examples": [
+          {
+            "problem": "What is 25% of 100?",
+            "solution": "25% of 100 = (25/100) * 100 = 25",
+            "analysis": "We convert the percentage to a decimal and multiply by the number.",
+            "complexity": "Beginner"
+          },
+          {
+            "problem": "What is 50% of 200?",
+            "solution": "50% of 200 = (50/100) * 200 = 100",
+            "analysis": "Again, convert percentage to decimal and multiply.",
+            "complexity": "Beginner"
+          },
+          {
+            "problem": "What is 10% of 50?",
+            "solution": "10% of 50 = (10/100) * 50 = 5",
+            "analysis": "Percentage to decimal conversion.",
+            "complexity": "Beginner"
+          }
+        ],
+        "pitfalls": ["Forgetting to convert percentage to decimal before multiplying"],
+        "tricks": ["Dividing by 100 is the same as moving the decimal point two places to the left."],
+        "practice": "Practice converting fractions to percentages and vice versa.",
+        "resources": ["Khan Academy Arithmetic", "Math is Fun - Percentages"]
+      },
+      "is_miscellaneous": false
+    },
+    {
+      "part_title": "Converting Fractions to Percentages",
+      "sections": {
+        "explanation": "To convert a fraction to a percentage, divide the numerator by the denominator and then multiply by 100. For example, to convert $$\frac{3}{4}$$ to a percentage, calculate (3/4) * 100 = 75%.",
+        "examples": [
+          {
+            "problem": "Convert $$\frac{1}{4}$$ to a percentage.",
+            "solution": "(1/4) * 100 = 25%",
+            "analysis": "Divide 1 by 4, then multiply by 100.",
+            "complexity": "Beginner"
+          },
+          {
+            "problem": "Convert $$\frac{2}{5}$$ to a percentage.",
+            "solution": "(2/5) * 100 = 40%",
+            "analysis": "Divide 2 by 5, then multiply by 100.",
+            "complexity": "Beginner"
+          },
+          {
+            "problem": "Convert $$\frac{7}{10}$$ to a percentage.",
+            "solution": "(7/10) * 100 = 70%",
+            "analysis": "Divide 7 by 10, then multiply by 100.",
+            "complexity": "Beginner"
+          },
+          {
+            "problem": "Convert $$\frac{1}{3}$$ to a percentage (approximate).",
+            "solution": "(1/3) * 100 = 33.33%",
+            "analysis": "Divide 1 by 3, then multiply by 100. This results in a repeating decimal, so we approximate.",
+            "complexity": "Intermediate"
+          }
+        ],
+        "pitfalls": ["Incorrectly dividing the numerator and denominator"],
+        "tricks": ["Recognize common fractions and their percentage equivalents (e.g., 1/2 = 50%, 1/4 = 25%)."],
+        "practice": "Convert a variety of fractions to percentages.",
+        "resources": ["Mathway Percentage Calculator", "Purplemath - Converting Fractions to Percents"]
+      },
+      "is_miscellaneous": false
+    },
+    {
+      "part_title": "Converting Percentages to Fractions",
+      "sections": {
+        "explanation": "To convert a percentage to a fraction, divide the percentage by 100 and simplify the resulting fraction. For example, 20% = $$\frac{20}{100} = \frac{1}{5}$$.",
+        "examples": [
+          {
+            "problem": "Convert 75% to a fraction.",
+            "solution": "75/100 = 3/4",
+            "analysis": "Divide 75 by 100 and simplify.",
+            "complexity": "Beginner"
+          },
+          {
+            "problem": "Convert 50% to a fraction.",
+            "solution": "50/100 = 1/2",
+            "analysis": "Divide 50 by 100 and simplify.",
+            "complexity": "Beginner"
+          },
+          {
+            "problem": "Convert 10% to a fraction.",
+            "solution": "10/100 = 1/10",
+            "analysis": "Divide 10 by 100 and simplify.",
+            "complexity": "Beginner"
+          },
+          {
+            "problem": "Convert 12.5% to a fraction.",
+            "solution": "12.5/100 = 1/8",
+            "analysis": "Divide 12.5 by 100 and simplify.",
+            "complexity": "Intermediate"
+          }
+        ],
+        "pitfalls": ["Not simplifying the fraction to its lowest terms"],
+        "tricks": ["Remember that percent means 'out of one hundred'."],
+        "practice": "Convert various percentages to fractions and simplify them.",
+        "resources": ["Coolmath - Converting Percents to Fractions", "IXL - Convert Percents to Fractions"]
+      },
+      "is_miscellaneous": false
+    },
+    {
+      "part_title": "Finding Percentage of a Number",
+      "sections": {
+        "explanation": "To find a percentage of a number, convert the percentage to a decimal and multiply it by the number. For example, to find 30% of 50, calculate 0.30 * 50 = 15.  $$Percentage = \frac{Part}{Whole} * 100$$",
+        "examples": [
+          {
+            "problem": "What is 40% of 80?",
+            "solution": "0.40 * 80 = 32",
+            "analysis": "Convert 40% to 0.40 and multiply by 80.",
+            "complexity": "Beginner"
+          },
+          {
+            "problem": "What is 75% of 200?",
+            "solution": "0.75 * 200 = 150",
+            "analysis": "Convert 75% to 0.75 and multiply by 200.",
+            "complexity": "Beginner"
+          },
+          {
+            "problem": "What is 15% of 60?",
+            "solution": "0.15 * 60 = 9",
+            "analysis": "Convert 15% to 0.15 and multiply by 60.",
+            "complexity": "Beginner"
+          },
+          {
+            "problem": "What is 120% of 50?",
+            "solution": "1.20 * 50 = 60",
+            "analysis": "Convert 120% to 1.20 and multiply by 50.",
+            "complexity": "Intermediate"
+          },
+          {
+            "problem": "What is 0.5% of 1000?",
+            "solution": "0.005 * 1000 = 5",
+            "analysis": "Convert 0.5% to 0.005 and multiply by 1000.",
+            "complexity": "Intermediate"
+          }
+        ],
+        "pitfalls": ["Incorrectly converting the percentage to a decimal"],
+        "tricks": ["Think of 'of' as multiplication."],
+        "practice": "Calculate percentages of various numbers.",
+        "resources": ["Percentage Calculator", "Math Goodies - Finding the Percent of a Number"]
+      },
+      "is_miscellaneous": false
+    },
+    {
+      "part_title": "Percentage Increase and Decrease",
+      "sections": {
+        "explanation": "Percentage increase is calculated as $$\frac{New Value - Original Value}{Original Value} * 100$$. Percentage decrease is calculated as $$\frac{Original Value - New Value}{Original Value} * 100$$.",
+        "examples": [
+          {
+            "problem": "A price increased from $20 to $25. What is the percentage increase?",
+            "solution": "((25 - 20) / 20) * 100 = 25%",
+            "analysis": "Apply the percentage increase formula.",
+            "complexity": "Intermediate"
+          },
+          {
+            "problem": "A price decreased from $50 to $40. What is the percentage decrease?",
+            "solution": "((50 - 40) / 50) * 100 = 20%",
+            "analysis": "Apply the percentage decrease formula.",
+            "complexity": "Intermediate"
+          },
+          {
+            "problem": "A quantity increased from 100 to 120. What is the percentage increase?",
+            "solution": "((120 - 100) / 100) * 100 = 20%",
+            "analysis": "Apply the percentage increase formula.",
+            "complexity": "Intermediate"
+          },
+          {
+            "problem": "A quantity decreased from 80 to 60. What is the percentage decrease?",
+            "solution": "((80 - 60) / 80) * 100 = 25%",
+            "analysis": "Apply the percentage decrease formula.",
+            "complexity": "Intermediate"
+          }
+        ],
+        "pitfalls": ["Using the new value instead of the original value in the denominator"],
+        "tricks": ["Remember the formula: (Change / Original) * 100."],
+        "practice": "Calculate percentage increases and decreases in various scenarios.",
+        "resources": ["SkillsYouNeed - Percentage Increase and Decrease", "Calculator Soup - Percentage Increase Calculator"]
+      },
+      "is_miscellaneous": false
+    },
+    {
+      "part_title": "Miscellaneous Percentage Problems",
+      "sections": {
+        "explanation": "This section covers various percentage-related problems that don't fit neatly into the previous categories. These often involve multi-step calculations or word problems. $$Total = \frac{Part}{Percentage}$$",
+        "examples": [
+          {
+            "problem": "If 30% of a number is 60, what is the number?",
+            "solution": "Let the number be x. 0.30x = 60. x = 60 / 0.30 = 200",
+            "analysis": "Set up an equation and solve for the unknown number.",
+            "complexity": "Intermediate"
+          },
+          {
+            "problem": "A store offers a 20% discount on an item originally priced at $100. What is the sale price?",
+            "solution": "Discount amount = 0.20 * 100 = $20. Sale price = 100 - 20 = $80",
+            "analysis": "Calculate the discount amount and subtract it from the original price.",
+            "complexity": "Intermediate"
+          },
+          {
+            "problem": "After a 10% increase, a price is $110. What was the original price?",
+            "solution": "Let the original price be x. 1.10x = 110. x = 110 / 1.10 = $100",
+            "analysis": "Set up an equation and solve for the original price.",
+            "complexity": "Intermediate"
+          }
+        ],
+        "pitfalls": ["Misinterpreting the word problem and setting up the wrong equation"],
+        "tricks": ["Carefully read the problem and identify the knowns and unknowns."],
+        "practice": "Solve a variety of percentage word problems.",
+        "resources": ["Math Word Problems - Percentage Problems", "Algebrator - Percentage Word Problems"]
+      },
+      "is_miscellaneous": true
+    }
+  ]
+}
+```

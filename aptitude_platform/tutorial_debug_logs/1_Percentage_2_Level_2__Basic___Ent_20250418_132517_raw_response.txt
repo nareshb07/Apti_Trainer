@@ -1,0 +1,234 @@
+```json
+{
+  "tutorial_parts": [
+    {
+      "part_title": "Understanding Percentage Basics",
+      "sections": {
+        "explanation": "A percentage is a way of expressing a number as a fraction of 100.  $$Percentage = \frac{Part}{Whole} \times 100$$",
+        "examples": [
+          {
+            "problem": "What is 25% of 200?",
+            "solution": "25% of 200 = (25/100) * 200 = 50",
+            "analysis": "We convert the percentage to a decimal and multiply by the whole.",
+            "complexity": "Beginner"
+          },
+          {
+            "problem": "What percentage of 50 is 10?",
+            "solution": "Percentage = (10/50) * 100 = 20%",
+            "analysis": "We divide the part by the whole and multiply by 100.",
+            "complexity": "Beginner"
+          },
+          {
+            "problem": "If a shirt costs $20 and there is a 10% discount, what is the discount amount?",
+            "solution": "Discount = (10/100) * $20 = $2",
+            "analysis": "We calculate the discount amount by multiplying the percentage discount by the original price.",
+            "complexity": "Beginner"
+          },
+          {
+            "problem": "Express 0.75 as a percentage.",
+            "solution": "0.75 * 100 = 75%",
+            "analysis": "Multiply the decimal by 100 to convert it to a percentage.",
+            "complexity": "Beginner"
+          }
+        ],
+        "pitfalls": ["Forgetting to convert percentage to decimal before calculations", "Misunderstanding the 'whole' in the problem"],
+        "tricks": ["Memorize common percentage equivalents (e.g., 25% = 1/4, 50% = 1/2)", "Use proportions to solve percentage problems"],
+        "practice": "Solve problems involving finding percentages of numbers, finding what percentage one number is of another, and calculating discounts.",
+        "resources": ["Khan Academy - Percentages", "Math is Fun - Percentages"]
+      },
+      "is_miscellaneous": false
+    },
+    {
+      "part_title": "Percentage Increase and Decrease",
+      "sections": {
+        "explanation": "Percentage increase/decrease is the relative change in a quantity. $$Percentage Change = \frac{New Value - Old Value}{Old Value} \times 100$$",
+        "examples": [
+          {
+            "problem": "A price increases from $10 to $12. What is the percentage increase?",
+            "solution": "Percentage Increase = (($12 - $10) / $10) * 100 = 20%",
+            "analysis": "We calculate the difference, divide by the original value, and multiply by 100.",
+            "complexity": "Beginner"
+          },
+          {
+            "problem": "A salary decreases from $500 to $450. What is the percentage decrease?",
+            "solution": "Percentage Decrease = (($450 - $500) / $500) * 100 = -10%.  The decrease is 10%.",
+            "analysis": "We calculate the difference, divide by the original value, and multiply by 100. A negative result indicates a decrease.",
+            "complexity": "Beginner"
+          },
+          {
+            "problem": "If a population of 100 increases by 5%, what is the new population?",
+            "solution": "Increase = (5/100) * 100 = 5. New Population = 100 + 5 = 105",
+            "analysis": "We calculate the increase amount and add it to the original population.",
+            "complexity": "Beginner"
+          },
+          {
+            "problem": "If a price of $80 is reduced by 15%, what is the new price?",
+            "solution": "Reduction = (15/100) * $80 = $12. New Price = $80 - $12 = $68",
+            "analysis": "We calculate the reduction amount and subtract it from the original price.",
+            "complexity": "Beginner"
+          }
+        ],
+        "pitfalls": ["Using the new value instead of the old value in the denominator", "Forgetting the negative sign for percentage decrease"],
+        "tricks": ["Calculate the increase/decrease amount directly and add/subtract from the original value", "Use a multiplier: increase by 10% means multiply by 1.10"],
+        "practice": "Solve problems involving price increases, salary decreases, population growth, and discounts.",
+        "resources": ["Math Goodies - Percentage Increase/Decrease", "Purplemath - Percent Change"]
+      },
+      "is_miscellaneous": false
+    },
+    {
+      "part_title": "Finding the Original Value",
+      "sections": {
+        "explanation": "Given a percentage change and the new value, we can find the original value. Let Original Value = x. Then $$New Value = x + (Percentage Change \times x)$$",
+        "examples": [
+          {
+            "problem": "After a 20% increase, a price is $120. What was the original price?",
+            "solution": "Let x be the original price. x + 0.20x = $120. 1.20x = $120. x = $120 / 1.20 = $100",
+            "analysis": "We set up an equation and solve for the original value.",
+            "complexity": "Intermediate"
+          },
+          {
+            "problem": "After a 10% discount, a price is $90. What was the original price?",
+            "solution": "Let x be the original price. x - 0.10x = $90. 0.90x = $90. x = $90 / 0.90 = $100",
+            "analysis": "We set up an equation and solve for the original value, accounting for the discount.",
+            "complexity": "Intermediate"
+          },
+          {
+            "problem": "A population increased by 15% to reach 230. What was the original population?",
+            "solution": "Let x be the original population. x + 0.15x = 230. 1.15x = 230. x = 230 / 1.15 = 200",
+            "analysis": "We set up an equation and solve for the original population.",
+            "complexity": "Intermediate"
+          },
+          {
+            "problem": "After a 5% tax, an item costs $21. What was the original price before tax?",
+            "solution": "Let x be the original price. x + 0.05x = $21. 1.05x = $21. x = $21 / 1.05 = $20",
+            "analysis": "We set up an equation and solve for the original price before tax.",
+            "complexity": "Intermediate"
+          }
+        ],
+        "pitfalls": ["Incorrectly setting up the equation", "Dividing by the wrong factor"],
+        "tricks": ["Think of the new value as a percentage of the original value (e.g., 120% or 90%)", "Isolate the original value variable"],
+        "practice": "Solve problems where you need to find the original price, population, or value after a percentage change.",
+        "resources": ["Algebra Help - Solving Percentage Problems", "Online Math Learning - Finding the Original Amount"]
+      },
+      "is_miscellaneous": false
+    },
+    {
+      "part_title": "Percentage Change Applications",
+      "sections": {
+        "explanation": "Percentage change is used in various real-world applications like finance, statistics, and economics.  $$Profit Percentage = \frac{Profit}{Cost Price} \times 100$$",
+        "examples": [
+          {
+            "problem": "A store buys an item for $50 and sells it for $60. What is the profit percentage?",
+            "solution": "Profit = $60 - $50 = $10. Profit Percentage = ($10 / $50) * 100 = 20%",
+            "analysis": "We calculate the profit and then the profit percentage.",
+            "complexity": "Beginner"
+          },
+          {
+            "problem": "An investment increases from $1000 to $1150. What is the percentage return?",
+            "solution": "Return = $1150 - $1000 = $150. Percentage Return = ($150 / $1000) * 100 = 15%",
+            "analysis": "We calculate the return and then the percentage return.",
+            "complexity": "Beginner"
+          },
+          {
+            "problem": "The number of students in a class increased from 20 to 25. What is the percentage increase?",
+            "solution": "Increase = 25 - 20 = 5. Percentage Increase = (5 / 20) * 100 = 25%",
+            "analysis": "We calculate the increase and then the percentage increase.",
+            "complexity": "Beginner"
+          },
+          {
+            "problem": "A company's revenue decreased from $1 million to $900,000. What is the percentage decrease?",
+            "solution": "Decrease = $900,000 - $1,000,000 = -$100,000. Percentage Decrease = (-$100,000 / $1,000,000) * 100 = -10%. The decrease is 10%.",
+            "analysis": "We calculate the decrease and then the percentage decrease.",
+            "complexity": "Beginner"
+          }
+        ],
+        "pitfalls": ["Confusing cost price and selling price", "Miscalculating profit or loss"],
+        "tricks": ["Always use the original value as the denominator when calculating percentage change", "Understand the context of the problem to determine what values to use"],
+        "practice": "Solve problems involving profit/loss, investment returns, and changes in quantities.",
+        "resources": ["Investopedia - Percentage Change", "Corporate Finance Institute - Percentage Change"]
+      },
+      "is_miscellaneous": false
+    },
+    {
+      "part_title": "Working with Multiple Percentages",
+      "sections": {
+        "explanation": "When dealing with multiple percentages, apply them sequentially.  For example, a 10% increase followed by a 5% decrease.",
+        "examples": [
+          {
+            "problem": "A price of $100 is increased by 10% and then decreased by 5%. What is the final price?",
+            "solution": "After 10% increase: $100 * 1.10 = $110. After 5% decrease: $110 * 0.95 = $104.50",
+            "analysis": "We apply each percentage change sequentially.",
+            "complexity": "Intermediate"
+          },
+          {
+            "problem": "A salary of $2000 is increased by 5% and then by another 10%. What is the final salary?",
+            "solution": "After 5% increase: $2000 * 1.05 = $2100. After 10% increase: $2100 * 1.10 = $2310",
+            "analysis": "We apply each percentage increase sequentially.",
+            "complexity": "Intermediate"
+          },
+          {
+            "problem": "A store offers a 20% discount followed by an additional 10% discount. What is the total percentage discount?",
+            "solution": "Let original price be $100. After 20% discount: $100 * 0.80 = $80. After 10% discount: $80 * 0.90 = $72. Total discount = $100 - $72 = $28. Total percentage discount = 28%",
+            "analysis": "We apply each discount sequentially and calculate the total discount.",
+            "complexity": "Intermediate"
+          },
+          {
+            "problem": "A population of 500 decreases by 10% and then increases by 20%. What is the final population?",
+            "solution": "After 10% decrease: 500 * 0.90 = 450. After 20% increase: 450 * 1.20 = 540",
+            "analysis": "We apply each percentage change sequentially.",
+            "complexity": "Intermediate"
+          }
+        ],
+        "pitfalls": ["Adding percentages directly instead of applying them sequentially", "Incorrectly calculating the intermediate values"],
+        "tricks": ["Use multipliers to simplify calculations", "Break down the problem into smaller steps"],
+        "practice": "Solve problems involving multiple discounts, increases, and decreases.",
+        "resources": ["Mathway - Percentage Problems", "Calculatorsoup - Percentage Calculator"]
+      },
+      "is_miscellaneous": false
+    },
+    {
+      "part_title": "Miscellaneous Percentage Problems",
+      "sections": {
+        "explanation": "This section covers various percentage-related problems that don't fit neatly into the previous categories.  These often require careful reading and understanding of the problem statement.",
+        "examples": [
+          {
+            "problem": "If 60% of students in a class are girls and there are 20 boys, how many students are there in total?",
+            "solution": "If 60% are girls, 40% are boys. 40% of total students = 20. Let x be total students. 0.40x = 20. x = 20 / 0.40 = 50",
+            "analysis": "We use the information about the boys to find the total number of students.",
+            "complexity": "Intermediate"
+          },
+          {
+            "problem": "A person spends 75% of their income and saves the rest. If they save $500, what is their income?",
+            "solution": "If they spend 75%, they save 25%. 25% of income = $500. Let x be income. 0.25x = $500. x = $500 / 0.25 = $2000",
+            "analysis": "We use the information about savings to find the total income.",
+            "complexity": "Intermediate"
+          },
+          {
+            "problem": "A mixture contains 30% alcohol. How much alcohol is in 500 ml of the mixture?",
+            "solution": "Alcohol = (30/100) * 500 ml = 150 ml",
+            "analysis": "We calculate the amount of alcohol directly from the percentage.",
+            "complexity": "Beginner"
+          },
+          {
+            "problem": "What number increased by 15% is equal to 460?",
+            "solution": "Let x be the number. x + 0.15x = 460. 1.15x = 460. x = 460 / 1.15 = 400",
+            "analysis": "We set up an equation and solve for the original number.",
+            "complexity": "Intermediate"
+          },
+          {
+            "problem": "A candidate received 60% of the votes and won by 200 votes. How many votes did the losing candidate receive?",
+            "solution": "The winner received 60% and the loser 40%. The difference is 20%. 20% of total votes = 200. Total votes = 200 / 0.20 = 1000. Losing candidate votes = 40% of 1000 = 400",
+            "analysis": "We use the winning margin to find the total votes and then the votes for the losing candidate.",
+            "complexity": "Advanced"
+          }
+        ],
+        "pitfalls": ["Misinterpreting the problem statement", "Using the wrong base for percentage calculations"],
+        "tricks": ["Draw diagrams or charts to visualize the problem", "Break down the problem into smaller, manageable parts"],
+        "practice": "Solve a variety of percentage problems from different contexts.",
+        "resources": ["Brainly - Percentage Problems", "Test Prep Websites"]
+      },
+      "is_miscellaneous": true
+    }
+  ]
+}
+```

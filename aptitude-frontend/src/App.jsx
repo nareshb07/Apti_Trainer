@@ -1,6 +1,7 @@
 import TopicSelector from './components/TopicSelector';
 import LevelSelector from './components/LevelSelector';
 // import SummaryPage from './components/SummaryPage';
+import TutorialContent from './components/TutorialContent';
 
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { useTrainer } from './context/TrainerContext';
@@ -35,6 +36,11 @@ function App() {
         <Route
           path="/summary"
           element={<Summary />}
+        />
+        {/* // Add this new route to your existing App.js */}
+        <Route 
+            path="/tutorial/:partOrder"
+            element={<TutorialContent />}
         />
         <Route 
           path="/questions"
