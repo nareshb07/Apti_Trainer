@@ -17,7 +17,7 @@ const LevelSelector = () => {
 
   const handleSelect = (level) => {
     setSelectedLevel(level);
-    navigate('/summary');
+    navigate('/topics');
   };
 
   return (

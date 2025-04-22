@@ -2,22 +2,12 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Level(models.Model):
-    # 1) define your code values
-    ENTRY = 'ENTRY'
-    PSU   = 'PSU'
-    GOVT  = 'GOVT'
-    CAT   = 'CAT'
-    UPSC  = 'UPSC'
-    ADV   = 'ADV'
 
-    # 2) tie each to its human‑readable label
     LEVEL_CHOICES = [
-        (ENTRY, 'Entry Level (Basic IT Jobs, Internships)'),
-        (PSU,   'PSU Exams (ONGC, BHEL, SAIL)'),
-        (GOVT,  'Government Exams (SSC, Banking)'),
-        (CAT,   'MBA Entrance (CAT, XAT)'),
-        (UPSC,  'UPSC/State PSC'),
-        (ADV,   'Advanced (Olympiads, Research)'),
+        ('Basic', 'Campus placements, internships'),
+        ('Intermediate' , 'Banking, SSC, GRE'),
+        ('Advance',  'CAT, XAT, IT company hard tests'),
+        ('Specialized Sections' , '(DI, Puzzles, Logical Reasoning)'),
     ]
 
     name = models.CharField(
@@ -52,7 +42,7 @@ class Topic(models.Model):
         ('quant',   'Quantitative Aptitude'),
         ('verbal',  'Verbal Ability'),
         ('logical', 'Logical Reasoning'),
-        ('tech',    'Technical Knowledge'),
+        # ('tech',    'Technical Knowledge'),
     ]
     category = models.CharField(
         max_length=50,
@@ -82,73 +72,48 @@ class Topic(models.Model):
     def __str__(self):
         return self.name
 
-
 class TutorialPart(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name='tutorial_parts')
     level = models.ForeignKey(Level, on_delete=models.CASCADE, related_name='tutorial_parts')
-    part_title = models.CharField(max_length=200)
-    order = models.PositiveIntegerField(
-        validators=[MinValueValidator(1)],
-        help_text="Display order (1-based)"
+
+    part_name = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=120, unique=True)
+
+    key_concepts = models.TextField(help_text="Explain the important concepts covered")
+    preparation_strategy = models.TextField(blank=True, help_text="Optional: how to prepare for this part")
+    example_problems = models.TextField(help_text="Include solved examples with step-by-step explanations")
+    explanations = models.TextField(help_text="Explain concepts or patterns in detail")
+    common_pitfalls = models.TextField(blank=True, help_text="Mention commonly made mistakes")
+    order = models.PositiveSmallIntegerField(
+        default=1,
+        help_text="Display order within the topic-level combination"
     )
-    
-    # Core Learning Content
-    explanation = models.TextField(
-        blank=True,
-        help_text="Detailed explanation with LaTeX formulas like $$E=mc^2$$"
-    )
-    key_formulas = models.TextField(
-        blank=True,
-        help_text="Important formulas (auto-extracted from explanation)"
-    )
-    
-    # Structured Examples
-    examples = models.JSONField(
-        default=list,
-        help_text="List of examples with structure: ["
-                 "{'problem':'...','solution':'...','analysis':'...','complexity':'Beginner/Intermediate/Advanced'}]"
-    )
-    
-    # Learning Aids
-    common_pitfalls = models.TextField(
-        blank=True,
-        help_text="One pitfall per line"
-    )
-    quick_tricks = models.TextField(
-        blank=True,
-        help_text="One trick per line"
-    )
-    practice_advice = models.TextField(blank=True)
-    recommended_resources = models.TextField(
-        blank=True,
-        help_text="One resource per line"
-    )
-    
-    # Metadata
-    is_miscellaneous = models.BooleanField(
+    is_complete = models.BooleanField(
         default=False,
-        help_text="Check if this is a 'catch-all' part"
+        help_text="Mark as complete for comprehensive tutorials"
     )
-    last_updated = models.DateTimeField(auto_now=True)
-    version = models.PositiveSmallIntegerField(default=1)
-    
+    quick_tips = models.TextField(
+        blank=True,
+        help_text="Shortcuts and memory aids",
+        # Changed from quick_tricks to quick_tips
+    )
+
+    prerequisite_parts = models.ManyToManyField(
+        'self',
+        symmetrical=False,
+        blank=True,
+        related_name='is_prerequisite_for',
+        help_text="Select parts that should be learned before this one."
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     class Meta:
-        unique_together = ('topic', 'level', 'order')
-        ordering = ['order']
-        verbose_name = "Tutorial Part"
-        verbose_name_plural = "Tutorial Parts"
+        unique_together = ('topic', 'level', 'part_name')
+        ordering = ['topic', 'level', 'part_name']
 
     def __str__(self):
-        return f"{self.topic.name} - {self.level.name} - Part {self.order}: {self.part_title}"
+        return f"{self.part_name} - {self.topic.name} ({self.level.name})"
 
-    def save(self, *args, **kwargs):
-        """Auto-extract formulas and ensure clean data"""
-        if not self.key_formulas and self.explanation:
-            self.key_formulas = self.extract_formulas()
-        super().save(*args, **kwargs)
-    
-    def extract_formulas(self):
-        """Extract LaTeX formulas from explanation"""
-        import re
-        formulas = re.findall(r'\$\$(.*?)\$\$', self.explanation, re.DOTALL)
-        return '\n'.join(formulas) if formulas else ''
+

@@ -1,286 +1,323 @@
-import os
+      
+import re
 import json
 import time
-import re
-from datetime import datetime
 from django.core.management.base import BaseCommand
-from django.conf import settings
-from django.db import transaction
-from dotenv import load_dotenv
+from django.utils.text import slugify
 import google.generativeai as genai
+from google.api_core.exceptions import GoogleAPIError  # More specific API error
 from aptitude.models import Topic, Level, TutorialPart
+from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
 class Command(BaseCommand):
-    help = "Generate comprehensive tutorial parts with strict validation"
-    
-    def __init__(self):
-        super().__init__()
-        self.api_calls = 0
-        self.start_time = datetime.now()
-        self.debug_dir = "tutorial_generation_logs"
-        os.makedirs(self.debug_dir, exist_ok=True)
-        
-        # Strict configuration
-        self.required_example_keys = {'problem', 'solution', 'analysis', 'complexity'}
-        self.allowed_complexities = {'Beginner', 'Intermediate', 'Advanced'}
+    help = 'Generate comprehensive tutorial parts for specific topics/levels.'
 
-    def validate_config(self):
-        """Verify all required settings are present"""
-        if not hasattr(settings, 'GEMINI_API_KEY') and not os.getenv('GEMINI_API_KEY'):
-            raise ValueError("Missing GEMINI_API_KEY in settings or .env")
-        genai.configure(api_key=getattr(settings, 'GEMINI_API_KEY', os.getenv('GEMINI_API_KEY')))
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--topic',
+            type=str,
+            help='Slug of the specific topic to generate tutorials for.'
+        )
+        parser.add_argument(
+            '--level',
+            type=str,
+            help='Slug of the specific level to generate tutorials for.'
+        )
+        parser.add_argument(
+            '--overwrite',
+            action='store_true', # Makes it a boolean flag
+            help='Overwrite existing tutorial parts even if marked complete.'
+        )
+        parser.add_argument(
+            '--delay',
+            type=int,
+            default=2, # Default delay of 2 seconds
+            help='Delay in seconds between API calls to avoid rate limits.'
+        )
+
+    def _format_examples(self, examples):
+        """Format worked examples for database storage"""
+        formatted = []
+        for i, example in enumerate(examples, 1):
+            # Basic validation for example structure
+            if not all(k in example for k in ['problem', 'solution_steps', 'final_answer']):
+                 self.stdout.write(self.style.WARNING(f"Skipping malformed example {i}: Missing keys."))
+                 continue # Skip this malformed example
+
+            example_text = (
+                f"EXAMPLE {i}:\n"
+                f"Problem: {example['problem']}\n\n"
+                "Solution Steps:\n" +
+                "\n".join(f"- {step}" for step in example['solution_steps']) +
+                f"\n\nAnswer: {example['final_answer']}"
+            )
+            if example.get('visualization'):
+                example_text += f"\n\nVisualization Tip: {example['visualization']}"
+            formatted.append(example_text)
+        return "\n\n" + "\n\n".join(formatted) + "\n"
+
+    def _validate_json_structure(self, data):
+        """Basic validation for the expected JSON structure from the AI."""
+        if not isinstance(data, dict):
+            raise ValueError("Response is not a JSON object (dictionary).")
+        if 'parts' not in data:
+            raise ValueError("JSON object is missing the required 'parts' key.")
+        if not isinstance(data['parts'], list):
+            raise ValueError("The 'parts' key does not contain a list.")
+
+        for i, part in enumerate(data['parts']):
+            if not isinstance(part, dict):
+                raise ValueError(f"Item {i} in 'parts' list is not a dictionary.")
+            required_part_keys = ['part_name', 'key_concepts', 'step_by_step_guide']
+            if not all(key in part for key in required_part_keys):
+                raise ValueError(f"Part {i} is missing one or more required keys: {required_part_keys}.")
+            
+            step_guide = part['step_by_step_guide']
+            if not isinstance(step_guide, dict):
+                 raise ValueError(f"Part {i} 'step_by_step_guide' is not a dictionary.")
+            if 'worked_examples' not in step_guide or not isinstance(step_guide['worked_examples'], list):
+                 raise ValueError(f"Part {i} 'step_by_step_guide' is missing 'worked_examples' list.")
+            if 'approach' not in step_guide:
+                 raise ValueError(f"Part {i} 'step_by_step_guide' is missing 'approach' key.")
+        # Add more checks as needed for other keys/nested structures
+
+    def parse_response(self, response_text):
+      """Improved JSON parsing that handles markdown, validates structure, and escapes LaTeX."""
+      json_str = response_text # Start with the raw text
+      try:
+          # Remove potential whitespace and markdown code fences
+          json_str = response_text.strip()
+          if json_str.startswith('```json'):
+              json_str = json_str[7:-3].strip()
+          elif json_str.startswith('```'):
+              json_str = json_str[3:-3].strip()
+
+          # Attempt to parse the JSON
+          data = json.loads(json_str)
+
+          # Validate the basic structure BEFORE fixing LaTeX
+          self._validate_json_structure(data)
+
+          # Recursive function to fix LaTeX expressions in the parsed data
+          def fix_latex_strings(obj):
+              if isinstance(obj, str):
+                  # Replace single backslashes in LaTeX with double backslashes
+                  # Handles cases like \frac, \times, \(\), etc.
+                  # Ensures already double-slashed \\( \\) are preserved.
+                  return re.sub(
+                      r'(?<!\\)\\(?!\\)',  # Match single backslashes not preceded/followed by another backslash
+                      r'\\\\',
+                      obj
+                  )
+              elif isinstance(obj, dict):
+                  return {k: fix_latex_strings(v) for k, v in obj.items()}
+              elif isinstance(obj, list):
+                  return [fix_latex_strings(item) for item in obj]
+              return obj
+
+          # Apply LaTeX fixes
+          return fix_latex_strings(data)
+
+      except json.JSONDecodeError as e:
+          debug_file = f"failed_response_{int(time.time())}_decode.txt"
+          with open(debug_file, 'w', encoding='utf-8') as f:
+              f.write(f"Original Response:\n---\n{response_text}\n---\n")
+              f.write(f"Attempted Cleaned JSON String:\n---\n{json_str}\n---\n")
+          raise ValueError(f"JSON decoding failed. Debug info saved to {debug_file}. Error: {str(e)} at line {e.lineno} col {e.colno}")
+      except ValueError as e: # Catch validation errors
+          debug_file = f"failed_response_{int(time.time())}_validation.txt"
+          with open(debug_file, 'w', encoding='utf-8') as f:
+              f.write(f"Original Response:\n---\n{response_text}\n---\n")
+              f.write(f"Parsed JSON (before validation failure):\n---\n{json_str}\n---\n") # Show the potentially malformed JSON
+          raise ValueError(f"JSON structure validation failed. Debug info saved to {debug_file}. Error: {str(e)}")
+
 
     def handle(self, *args, **options):
-        self.validate_config()
-        model = genai.GenerativeModel('gemini-pro')
-        
-        topics = Topic.objects.all()
-        levels = Level.objects.all()
-        total = len(topics) * len(levels)
-        processed = 0
-        
-        for topic in topics:
-            for level in levels:
-                processed += 1
+        genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+        model = genai.GenerativeModel('gemini-1.5-flash') # Or your preferred model
+
+        # Filter topics based on command-line argument
+        topics_qs = Topic.objects.all()
+        if options['topic']:
+            topics_qs = topics_qs.filter(slug=options['topic'])
+            if not topics_qs.exists():
+                self.stdout.write(self.style.ERROR(f"Topic with slug '{options['topic']}' not found."))
+                return
+
+        # Filter levels based on command-line argument
+        levels_qs = Level.objects.all()
+        if options['level']:
+            levels_qs = levels_qs.filter(slug=options['level'])
+            if not levels_qs.exists():
+                self.stdout.write(self.style.ERROR(f"Level with slug '{options['level']}' not found."))
+                return
+
+        overwrite = options['overwrite']
+        api_delay = options['delay']
+
+        total_combinations = topics_qs.count() * levels_qs.count()
+        current_combination = 0
+
+        for topic in topics_qs:
+            for level in levels_qs:
+                current_combination += 1
+                self.stdout.write(f"\n({current_combination}/{total_combinations}) 📚 Generating {topic.name} ({level.name})...")
+
                 try:
-                    self.generate_for_topic_level(topic, level, model, processed, total)
+                    prompt = self._build_master_prompt(topic, level)
+                    response = model.generate_content(prompt)
+
+                    # Directly use response.text (should be unicode)
+                    response_text = response.text
+
+                    tutorial_data = self.parse_response(response_text)
+                    self._create_tutorial_parts(topic, level, tutorial_data, overwrite)
+
+                except GoogleAPIError as e:
+                    self.stdout.write(self.style.ERROR(f"❌ API Error for {topic.name} {level.name}: {str(e)}"))
+                    # Consider adding retry logic or longer sleep here for specific API errors like rate limits
+                except ValueError as e: # Catch parsing/validation errors
+                    self.stdout.write(self.style.ERROR(f"❌ Data Processing Error for {topic.name} {level.name}: {str(e)}"))
                 except Exception as e:
-                    self.log_error(f"Critical failure on {topic.name}/{level.name}: {str(e)}")
-                    continue
-                    
-        self.stdout.write(self.style.SUCCESS(
-            f"\nCompleted {processed}/{total} combinations in "
-            f"{(datetime.now() - self.start_time).total_seconds():.1f}s\n"
-            f"API Calls: {self.api_calls}"
-        ))
+                    self.stdout.write(self.style.ERROR(f"❌ Unexpected Failed {topic.name} {level.name}: {type(e).__name__} - {str(e)}"))
+                    # Optionally log the full traceback here for unexpected errors
+                    import traceback
+                    traceback.print_exc() # Prints traceback to stderr
 
-    def generate_for_topic_level(self, topic, level, model, processed, total):
-        """Full generation pipeline for one topic-level combo"""
-        debug_id = f"{topic.slug}_{level.slug}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        
-        try:
-            # Step 1: Generate content
-            prompt = self.build_strict_prompt(topic, level)
-            response = self.safe_api_call(model, prompt)
-            
-            # Step 2: Parse and validate
-            tutorial_data = self.parse_response(response.text, debug_id)
-            self.validate_tutorial_structure(tutorial_data, topic, level)
-            
-            # Step 3: Save to database
-            with transaction.atomic():
-                self.save_tutorial_parts(topic, level, tutorial_data)
-            
-            self.stdout.write(self.style.SUCCESS(
-                f"[{processed}/{total}] Generated {len(tutorial_data['tutorial_parts'])} "
-                f"parts for {topic.name} ({level.name})"
-            ))
-            
-        except Exception as e:
-            self.log_error(f"Failed {topic.name}/{level.name}: {str(e)}", debug_id)
-            raise
+                finally:
+                    # Add a delay between processing each topic/level combination
+                    if total_combinations > 1 and current_combination < total_combinations:
+                         self.stdout.write(f"--- Waiting {api_delay}s before next request ---")
+                         time.sleep(api_delay)
 
-    def build_strict_prompt(self, topic, level):
-        """Create a prompt with explicit formatting rules"""
-        part_count = self.get_part_count(level)
-        
-        return f"""You are a strict JSON generator for educational content. Follow these rules exactly:
 
-1. OUTPUT MUST BE VALID JSON ONLY (no markdown, no text outside)
-2. Structure:
+      
+          
+    def _build_master_prompt(self, topic, level):
+      """Constructs the precise prompt for Gemini AI with strict formatting rules"""
+      return f"""Generate a comprehensive tutorial for {topic.name} at {level.name} level.
+
+ABSOLUTELY CRITICAL INSTRUCTIONS - FOLLOW EXACTLY:
+
+1. RESPONSE FORMAT:
+   - Your *entire* response MUST be ONLY a single JSON object.
+   - Start the JSON block IMMEDIATELY with ```json and end it IMMEDIATELY with ```.
+   - NO text, explanations, apologies, summaries, or anything else before ```json or after ```.
+   - The JSON content MUST start with {{ and end with }}.
+
+2. LATEX FORMATTING (CRITICAL FOR VALID JSON):
+   - Inside JSON string values, ALL LaTeX commands AND math delimiters MUST use DOUBLE BACKSLASHES (`\\\\`).
+   - EXAMPLES: `\\\\frac{{n}}{{d}}`, `\\\\sqrt{{x}}`, `\\\\times`, `\\\\pm`, `\\\\(`. `\\\\)`. `\\\\ [`. `\\\\ ]`.
+   - SINGLE BACKSLASHES (`\\`) for LaTeX WILL CAUSE an INVALID JSON error. DO NOT USE THEM.
+   - Correct example within a JSON string: "Calculate \\\\(\\\\frac{{1}}{{2}}\\\\) times 100."
+   - Incorrect (causes error): "Calculate \(\frac{1}{2}\) times 100."
+   - For percentage signs *in text* (not LaTeX math): Use `\\%` (e.g., "This is 50\\% effective.")
+
+3. CONTENT STRUCTURE (MANDATORY):
+   - Top-level key: "parts" (list of objects).
+   - Each part object *MUST* have: 'part_name' (string), 'key_concepts' (list of strings), 'step_by_step_guide' (object).
+   - Each 'step_by_step_guide' object *MUST* have: 'approach' (string), 'worked_examples' (list of objects).
+   - Each 'worked_examples' object *MUST* have: 'problem' (string), 'solution_steps' (list of strings), 'final_answer' (string).
+   - Include 2-3 worked examples per part, each with 3-5 steps.
+   - Optional keys (use if relevant): 'learning_roadmap', 'common_pitfalls', 'pro_tips' (in part object); 'visualization' (in worked_example object).
+
+4. JSON STRING CONTENT & ESCAPING:
+   - Standard JSON string escaping MUST be used: `\\"` for double quotes, `\\\\` for literal backslashes (as required for LaTeX above), `\\n` for newlines.
+   - Do NOT use raw newlines that break the JSON structure. Use `\\n` within strings where a line break is intended in the text content.
+
+EXAMPLE STRUCTURE (Illustrates rules - Pay attention to `\\\\`):
+```json
 {{
-  "tutorial_parts": [
+  "parts": [
     {{
-      "part_title": "Short title (3-5 words max)",
-      "sections": {{
-        "explanation": "Detailed explanation with LaTeX formulas like $$E=mc^2$$",
-        "examples": [
+      "part_name": "Advanced Topic Example",
+      "key_concepts": [
+        "Concept one explanation.",
+        "Concept two involving \\\\(\\\\sqrt{{a^2 + b^2}}\\\\)."
+      ],
+      "step_by_step_guide": {{
+        "approach": "General approach description.\\nFollow these steps using \\\\(\\\\alpha\\\\) and \\\\(\\\\beta\\\\).",
+        "worked_examples": [
           {{
-            "problem": "Clear problem statement",
-            "solution": "Step-by-step solution",
-            "analysis": "Why this method works",
-            "complexity": "Beginner/Intermediate/Advanced"
+            "problem": "Solve for x: \\\\(x^2 = 9\\\\)",
+            "solution_steps": [
+              "Take the square root: \\\\(x = \\\\pm\\\\sqrt{{9}}\\\\)",
+              "Calculate the roots: \\\\(x = 3\\\\) or \\\\(x = -3\\\\)"
+            ],
+            "final_answer": "\\\\(\\\\boxed{{x = \\\\pm 3}}\\\\)"
           }}
-        ],
-        "pitfalls": ["Common mistake 1", "Common mistake 2"],
-        "tricks": ["Useful trick 1", "Useful trick 2"],
-        "practice": "Specific practice instructions",
-        "resources": ["Resource 1", "Resource 2"]
+        ]
       }},
-      "is_miscellaneous": false
+      "common_pitfalls": [
+        "Forgetting the negative root when using \\\\(\\\\pm\\\\sqrt{{...}}\\\\).",
+        "Incorrectly escaping LaTeX (using single '\\'). MUST USE '\\\\'."
+      ]
     }}
   ]
 }}
 
-3. Requirements:
-- Topic: {topic.name} ({getattr(topic, 'category', 'No category')})
-- Level: {level.name}
-- Generate exactly {part_count} parts
-- Last part must have "is_miscellaneous": true
-- Each part must have 3-5 examples
-- All example problems must be solvable at {level.name} level
-- Escape all special characters properly
-- Never use markdown symbols (*, _, ``` etc.)
-- Never use single quotes
-- Never add trailing commas
+    
 
-4. Example (for a Calculus topic):
-{{
-  "tutorial_parts": [
-    {{
-      "part_title": "Limits Fundamentals",
-      "sections": {{
-        "explanation": "Limits describe... $$\\lim_{{x\\to a}} f(x)$$...",
-        "examples": [
-          {{
-            "problem": "Find $$\\lim_{{x\\to 3}} (x^2-9)/(x-3)$$",
-            "solution": "1. Factor numerator...",
-            "analysis": "This uses algebraic manipulation...",
-            "complexity": "Beginner"
-          }}
-        ],
-        "pitfalls": ["Forgetting to check indeterminate forms"],
-        "tricks": ["Try L'Hôpital's rule for 0/0 cases"],
-        "practice": "Solve 10 limit problems of each type",
-        "resources": ["Khan Academy Limits Course"]
-      }},
-      "is_miscellaneous": false
-    }}
-  ]
-}}
+IGNORE_WHEN_COPYING_START
+Use code with caution. Python
+IGNORE_WHEN_COPYING_END
+
+Now, generate the tutorial content strictly following ALL the above critical instructions, especially the DOUBLE BACKSLASH (\\\\) rule for ALL LaTeX, for the topic "{topic.name}" at the "{level.name}" level. Ensure the output is ONLY the JSON within json markers. Failure to use \\\\ for LaTeX will result in invalid JSON.
 """
+    
+    def _create_tutorial_parts(self, topic, level, data, overwrite=False):
+        """Save tutorial parts to the database, respecting the overwrite flag."""
+        saved_count = 0
+        skipped_count = 0
+        failed_count = 0
 
-    def get_part_count(self, level):
-        """Determine how many parts to generate based on level"""
-        level_name = level.name.lower()
-        if "beginner" in level_name:
-            return 4-6
-        elif "intermediate" in level_name:
-            return 6-8
-        elif "advanced" in level_name:
-            return 8-12
-        return 6  # Default
+        for order, part_data in enumerate(data.get('parts', []), start=1):
+            part_name = part_data.get('part_name', f"Part {order}") # Default name if missing
+            part_slug = slugify(f"{topic.slug}-{level.slug}-{part_name}")
 
-    def safe_api_call(self, model, prompt, max_retries=3):
-        """Handle rate limiting and API errors"""
-        for attempt in range(max_retries):
             try:
-                if self.api_calls >= 15:  # Rate limit guard
-                    wait = 60 + (10 * attempt)
-                    self.stdout.write(f"⚠️ Rate limit approached. Waiting {wait}s...")
-                    time.sleep(wait)
-                    self.api_calls = 0
-
-                self.api_calls += 1
-                response = model.generate_content(
-                    prompt,
-                    generation_config={
-                        "temperature": 0.3,
-                        "max_output_tokens": 4000
-                    }
+                # Try to get the object, or prepare to create it
+                obj, created = TutorialPart.objects.get_or_create(
+                    topic=topic,
+                    level=level,
+                    slug=part_slug,
+                    # Only include identifying fields in get_or_create
                 )
-                return response
+
+                # Decide whether to update based on 'created' or 'overwrite' flag
+                if created or overwrite:
+                    obj.part_name = part_name
+                    obj.key_concepts = "\n".join(part_data.get('key_concepts', []))
+                    obj.preparation_strategy = "\n".join(part_data.get('learning_roadmap', [])) # Renamed key? Check model
+                    
+                    # Safely access nested structure for examples
+                    step_guide = part_data.get('step_by_step_guide', {})
+                    obj.example_problems = self._format_examples(step_guide.get('worked_examples', []))
+                    obj.explanations = step_guide.get('approach', '') # Provide default empty string
+
+                    obj.common_pitfalls = "\n".join(part_data.get('common_pitfalls', []))
+                    obj.quick_tips = "\n".join(part_data.get('pro_tips', []))
+                    obj.order = order
+                    obj.is_complete = True # Mark as complete upon generation/update
+                    obj.save()
+
+                    msg = "Created" if created else "Overwritten"
+                    self.stdout.write(self.style.SUCCESS(f"  ✅ {msg} part: {part_name}"))
+                    saved_count += 1
+                else:
+                    # Object exists and overwrite is False
+                    self.stdout.write(f"  ⏭️ Skipped existing part (use --overwrite to update): {part_name}")
+                    skipped_count += 1
+
             except Exception as e:
-                if attempt == max_retries - 1:
-                    raise
-                time.sleep(min(5 * (attempt + 1), 30))
+                failed_count += 1
+                self.stdout.write(self.style.ERROR(f"  ❌ Failed to save part {part_name}: {type(e).__name__} - {str(e)}"))
+                continue # Continue to the next part
 
-    def parse_response(self, response_text, debug_id=None):
-        """Strict JSON parsing with multiple fallbacks"""
-        try:
-            # First attempt: Standard JSON
-            return json.loads(self.clean_response(response_text))
-        except json.JSONDecodeError:
-            # Second attempt: Lenient parser
-            try:
-                import demjson3
-                return demjson3.decode(self.clean_response(response_text))
-            except:
-                self.save_debug_file(f"{debug_id}_failed_parse.txt", response_text)
-                raise ValueError("Could not parse response as JSON")
-
-    def clean_response(self, text):
-        """Remove all non-JSON content"""
-        text = re.sub(r'^[^{]*', '', text.strip())  # Remove prefix
-        text = re.sub(r'[^}]*$', '', text)  # Remove suffix
-        text = re.sub(r'[\x00-\x1f\x7f-\x9f]', '', text)  # Remove control chars
-        return text.strip()
-
-    def validate_tutorial_structure(self, data, topic, level):
-        """Ensure data meets all requirements"""
-        if not isinstance(data, dict):
-            raise ValueError("Top-level data must be a dictionary")
-        
-        if 'tutorial_parts' not in data:
-            raise ValueError("Missing 'tutorial_parts' key")
-            
-        parts = data['tutorial_parts']
-        if not isinstance(parts, list) or not parts:
-            raise ValueError("'tutorial_parts' must be a non-empty list")
-            
-        for part in parts:
-            self.validate_part(part, topic, level)
-
-    def validate_part(self, part, topic, level):
-        """Validate an individual tutorial part"""
-        required_keys = {'part_title', 'sections', 'is_miscellaneous'}
-        if not required_keys.issubset(part.keys()):
-            raise ValueError(f"Part missing required keys: {required_keys - part.keys()}")
-            
-        sections = part['sections']
-        if not isinstance(sections, dict):
-            raise ValueError("Sections must be a dictionary")
-            
-        self.validate_examples(sections.get('examples', []))
-        
-        # Validate misc fields
-        if not isinstance(part['is_miscellaneous'], bool):
-            raise ValueError("is_miscellaneous must be boolean")
-
-    def validate_examples(self, examples):
-        """Ensure examples have correct structure"""
-        if not isinstance(examples, list) or len(examples) < 3:
-            raise ValueError("Need at least 3 examples per part")
-            
-        for ex in examples:
-            if not self.required_example_keys.issubset(ex.keys()):
-                raise ValueError(f"Example missing keys: {self.required_example_keys - ex.keys()}")
-            if ex['complexity'] not in self.allowed_complexities:
-                raise ValueError(f"Invalid complexity: {ex['complexity']}")
-
-    def save_tutorial_parts(self, topic, level, data):
-        """Bulk-create tutorial parts with validation"""
-        TutorialPart.objects.filter(topic=topic, level=level).delete()
-        
-        parts = []
-        for order, part in enumerate(data['tutorial_parts'], 1):
-            sections = part['sections']
-            parts.append(TutorialPart(
-                topic=topic,
-                level=level,
-                order=order,
-                part_title=part['part_title'],
-                explanation=sections.get('explanation', ''),
-                examples=sections.get('examples', []),
-                common_pitfalls='\n'.join(sections.get('pitfalls', [])),
-                quick_tricks='\n'.join(sections.get('tricks', [])),
-                practice_advice=sections.get('practice', ''),
-                recommended_resources='\n'.join(sections.get('resources', [])),
-                is_miscellaneous=part['is_miscellaneous']
-            ))
-        
-        TutorialPart.objects.bulk_create(parts)
-
-    def log_error(self, message, debug_id=None):
-        """Log errors with optional debug info"""
-        self.stderr.write(self.style.ERROR(message))
-        if debug_id:
-            self.save_debug_file(f"{debug_id}_error.txt", message)
-
-    def save_debug_file(self, filename, content):
-        """Save debug information"""
-        path = os.path.join(self.debug_dir, filename)
-        with open(path, 'w', encoding='utf-8') as f:
-            f.write(str(content))
+        summary_style = self.style.SUCCESS if failed_count == 0 else self.style.WARNING
+        self.stdout.write(summary_style(
+            f"  📊 Summary for {level.name}: {saved_count} Saved/Overwritten, {skipped_count} Skipped, {failed_count} Failed."
+        ))

@@ -13,7 +13,7 @@ import './index.css';
 
 
 function App() {
-  const {selectedTopic} = useTrainer();
+  const {selectedLevel} = useTrainer();
   // const [selectedTopic, setSelectedTopic] = useState(null);
   // const [selectedLevel, setSelectedLevel] = useState(null);
 
@@ -22,14 +22,14 @@ function App() {
       <h1 className="text-2xl font-bold mb-4">🧠 the Aptitude Trainer</h1>
 
       <Routes>
-        <Route path="/" element={<TopicSelector/>} />
+        <Route path="/" element={<LevelSelector/>} />
         <Route
-          path="/level"
+          path="/topics"
           element={
-            selectedTopic ? (
-              <LevelSelector/>
+            selectedLevel ? (
+              <TopicSelector/>
             ) : (
-              <div>Please select a topic first</div>
+              <div>Please select a Level first</div>
             )
           }
         />
