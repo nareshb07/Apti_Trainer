@@ -1,0 +1,185 @@
+Original Response:
+---
+```json
+{
+  "parts": [
+    {
+      "part_name": "Calculating Percentages",
+      "key_concepts": [
+        "What is a percentage? A percentage is a way of expressing a part of a whole as a number out of 100. The symbol '%' means 'per hundred'. For example, 50% means 50 out of 100, which is written as the fraction \\(\\frac{50}{100}\\).",
+        "Converting Percentage to Decimal: To use percentages in calculations, we often convert them to decimals. To do this, divide the percentage number by 100. Example: \\(25\\% = \\frac{25}{100} = 0.25\\).",
+        "Finding a Percentage OF a Number: To find a specific percentage of a total number, you multiply the decimal form of the percentage by the total number. Example: Finding 50% of 200 means calculating \\(0.50 \\times 200 = 100\\).",
+        "Finding the Percentage ONE Number IS of ANOTHER:  To determine what percentage one number represents of another, divide the first number (the 'part') by the second number (the 'whole'), then multiply by 100 to express the result as a percentage.  For example, to find what percentage 15 is of 60, calculate \\(\\frac{15}{60} \\times 100 = 25%\\)."
+      ],
+      "step_by_step_guide": {
+        "approach": "To find what percentage one number (the 'part') is of another number (the 'whole'), follow these conceptual steps:\n1. Identify the 'part' and the 'whole' from the problem.\n2. Divide the 'part' by the 'whole'. This gives you the fraction or decimal representation of the part relative to the whole. Use \\(\\frac{\'part\'}{\'whole\'}\\) notation for clarity.\n3. Multiply this result by 100 to convert it into a percentage value.\n4. Add the '%' sign to indicate it's a percentage.",
+        "worked_examples": [
+          {
+            "problem": "A student scored 18 marks out of a total of 25 marks on a test. What is their score as a percentage?",
+            "solution_steps": [
+              "Step 1: Identify the 'part' and the 'whole'. The part is the score obtained (18) and the whole is the total possible marks (25).",
+              "Step 2: Divide the part by the whole to find the decimal equivalent. Write this as a fraction first: \\(\\frac{18}{25}\\). Then calculate the decimal: \\(18 \\div 25 = 0.72\\). This means the score is 0.72 of the total.",
+              "Step 3: Multiply the decimal by 100 to convert it to a percentage. Calculation: \\(0.72 \\times 100 = 72\\).",
+              "Step 4: Add the percentage sign (%) to the result. Result: 72%."
+            ],
+            "final_answer": "The student's score is \\(\\boxed{72\\%}\\). This means they got 72 marks for every 100 possible marks."
+          },
+          {
+            "problem": "In a class of 30 students, 12 are girls. What percentage of the class are girls?",
+            "solution_steps": [
+              "Step 1: Identify the 'part' and 'whole'. The part is the number of girls (12), and the whole is the total number of students (30).",
+              "Step 2: Divide the part by the whole: \\(\\frac{12}{30} = 0.4\\).",
+              "Step 3: Multiply by 100 to express as a percentage: \\(0.4 \\times 100 = 40\\).",
+              "Step 4: Add the percentage sign: 40%."
+            ],
+            "final_answer": "40% of the class are girls."
+          },
+          {
+            "problem": "A shirt is originally priced at \\(\\$50\\), but is on sale for \\(\\$40\\). What is the percentage discount?",
+            "solution_steps": [
+              "Step 1: Find the amount of the discount: \\(\\$50 - \\$40 = \\$10\\). This is the 'part'.",
+              "Step 2: The original price is the 'whole': \\$50.",
+              "Step 3: Divide the discount by the original price: \\(\\frac{10}{50} = 0.2\\).",
+              "Step 4: Multiply by 100 to get the percentage: \\(0.2 \\times 100 = 20\\).",
+              "Step 5: Add the percentage sign: 20%."
+            ],
+            "final_answer": "The discount is 20%."
+          }
+        ]
+      },
+      "common_pitfalls": [
+        "Mixing up the 'part' and the 'whole' when dividing.",
+        "Forgetting to multiply by 100 to convert the decimal to a percentage.",
+        "Incorrectly using LaTeX (using single '\' instead of '\\').",
+        "Incorrectly writing fractions (e.g., writing `frac50100` instead of `\\frac{50}{100}`).",
+        "Using special characters for '%' instead of the plain '%' sign."
+      ]
+    },
+    {
+      "part_name": "Percentage Increase and Decrease",
+      "key_concepts": [
+        "Percentage Increase: This is the increase in a value expressed as a percentage of the original value.  The formula is: \\(\\frac{New\\ Value - Original\\ Value}{Original\\ Value} \\times 100\\% \\)",
+        "Percentage Decrease: This is the decrease in a value expressed as a percentage of the original value. The formula is: \\(\\frac{Original\\ Value - New\\ Value}{Original\\ Value} \\times 100\\% \\)"
+      ],
+      "step_by_step_guide": {
+        "approach": "To calculate percentage increase or decrease:\n1. Find the difference between the new and original values.\n2. Divide this difference by the original value.\n3. Multiply the result by 100 to express it as a percentage." ,
+        "worked_examples": [
+          {
+            "problem": "The price of a house increased from \\(\\$200,000\\) to \\(\\$250,000\\). What is the percentage increase?",
+            "solution_steps": [
+              "Step 1: Find the difference: \\(\\$250,000 - \\$200,000 = \\$50,000\\).",
+              "Step 2: Divide by the original value: \\(\\frac{50000}{200000} = 0.25\\).",
+              "Step 3: Multiply by 100: \\(0.25 \\times 100 = 25\\).",
+              "Step 4: Add the percentage sign: 25%."
+            ],
+            "final_answer": "The percentage increase is 25%."
+          },
+          {
+            "problem": "A shop reduces the price of a jacket from \\(\\$80\\) to \\(\\$60\\). What is the percentage decrease?",
+            "solution_steps": [
+              "Step 1: Find the difference: \\(\\$80 - \\$60 = \\$20\\).",
+              "Step 2: Divide the difference by the original price: \\(\\frac{20}{80} = 0.25\\).",
+              "Step 3: Multiply by 100: \\(0.25 \\times 100 = 25\\).",
+              "Step 4: Add the percentage sign: 25%."
+            ],
+            "final_answer": "The percentage decrease is 25%."
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
+---
+Attempted Cleaned JSON String:
+---
+{
+  "parts": [
+    {
+      "part_name": "Calculating Percentages",
+      "key_concepts": [
+        "What is a percentage? A percentage is a way of expressing a part of a whole as a number out of 100. The symbol '%' means 'per hundred'. For example, 50% means 50 out of 100, which is written as the fraction \\(\\frac{50}{100}\\).",
+        "Converting Percentage to Decimal: To use percentages in calculations, we often convert them to decimals. To do this, divide the percentage number by 100. Example: \\(25\\% = \\frac{25}{100} = 0.25\\).",
+        "Finding a Percentage OF a Number: To find a specific percentage of a total number, you multiply the decimal form of the percentage by the total number. Example: Finding 50% of 200 means calculating \\(0.50 \\times 200 = 100\\).",
+        "Finding the Percentage ONE Number IS of ANOTHER:  To determine what percentage one number represents of another, divide the first number (the 'part') by the second number (the 'whole'), then multiply by 100 to express the result as a percentage.  For example, to find what percentage 15 is of 60, calculate \\(\\frac{15}{60} \\times 100 = 25%\\)."
+      ],
+      "step_by_step_guide": {
+        "approach": "To find what percentage one number (the 'part') is of another number (the 'whole'), follow these conceptual steps:\n1. Identify the 'part' and the 'whole' from the problem.\n2. Divide the 'part' by the 'whole'. This gives you the fraction or decimal representation of the part relative to the whole. Use \\(\\frac{\'part\'}{\'whole\'}\\) notation for clarity.\n3. Multiply this result by 100 to convert it into a percentage value.\n4. Add the '%' sign to indicate it's a percentage.",
+        "worked_examples": [
+          {
+            "problem": "A student scored 18 marks out of a total of 25 marks on a test. What is their score as a percentage?",
+            "solution_steps": [
+              "Step 1: Identify the 'part' and the 'whole'. The part is the score obtained (18) and the whole is the total possible marks (25).",
+              "Step 2: Divide the part by the whole to find the decimal equivalent. Write this as a fraction first: \\(\\frac{18}{25}\\). Then calculate the decimal: \\(18 \\div 25 = 0.72\\). This means the score is 0.72 of the total.",
+              "Step 3: Multiply the decimal by 100 to convert it to a percentage. Calculation: \\(0.72 \\times 100 = 72\\).",
+              "Step 4: Add the percentage sign (%) to the result. Result: 72%."
+            ],
+            "final_answer": "The student's score is \\(\\boxed{72\\%}\\). This means they got 72 marks for every 100 possible marks."
+          },
+          {
+            "problem": "In a class of 30 students, 12 are girls. What percentage of the class are girls?",
+            "solution_steps": [
+              "Step 1: Identify the 'part' and 'whole'. The part is the number of girls (12), and the whole is the total number of students (30).",
+              "Step 2: Divide the part by the whole: \\(\\frac{12}{30} = 0.4\\).",
+              "Step 3: Multiply by 100 to express as a percentage: \\(0.4 \\times 100 = 40\\).",
+              "Step 4: Add the percentage sign: 40%."
+            ],
+            "final_answer": "40% of the class are girls."
+          },
+          {
+            "problem": "A shirt is originally priced at \\(\\$50\\), but is on sale for \\(\\$40\\). What is the percentage discount?",
+            "solution_steps": [
+              "Step 1: Find the amount of the discount: \\(\\$50 - \\$40 = \\$10\\). This is the 'part'.",
+              "Step 2: The original price is the 'whole': \\$50.",
+              "Step 3: Divide the discount by the original price: \\(\\frac{10}{50} = 0.2\\).",
+              "Step 4: Multiply by 100 to get the percentage: \\(0.2 \\times 100 = 20\\).",
+              "Step 5: Add the percentage sign: 20%."
+            ],
+            "final_answer": "The discount is 20%."
+          }
+        ]
+      },
+      "common_pitfalls": [
+        "Mixing up the 'part' and the 'whole' when dividing.",
+        "Forgetting to multiply by 100 to convert the decimal to a percentage.",
+        "Incorrectly using LaTeX (using single '\' instead of '\\').",
+        "Incorrectly writing fractions (e.g., writing `frac50100` instead of `\\frac{50}{100}`).",
+        "Using special characters for '%' instead of the plain '%' sign."
+      ]
+    },
+    {
+      "part_name": "Percentage Increase and Decrease",
+      "key_concepts": [
+        "Percentage Increase: This is the increase in a value expressed as a percentage of the original value.  The formula is: \\(\\frac{New\\ Value - Original\\ Value}{Original\\ Value} \\times 100\\% \\)",
+        "Percentage Decrease: This is the decrease in a value expressed as a percentage of the original value. The formula is: \\(\\frac{Original\\ Value - New\\ Value}{Original\\ Value} \\times 100\\% \\)"
+      ],
+      "step_by_step_guide": {
+        "approach": "To calculate percentage increase or decrease:\n1. Find the difference between the new and original values.\n2. Divide this difference by the original value.\n3. Multiply the result by 100 to express it as a percentage." ,
+        "worked_examples": [
+          {
+            "problem": "The price of a house increased from \\(\\$200,000\\) to \\(\\$250,000\\). What is the percentage increase?",
+            "solution_steps": [
+              "Step 1: Find the difference: \\(\\$250,000 - \\$200,000 = \\$50,000\\).",
+              "Step 2: Divide by the original value: \\(\\frac{50000}{200000} = 0.25\\).",
+              "Step 3: Multiply by 100: \\(0.25 \\times 100 = 25\\).",
+              "Step 4: Add the percentage sign: 25%."
+            ],
+            "final_answer": "The percentage increase is 25%."
+          },
+          {
+            "problem": "A shop reduces the price of a jacket from \\(\\$80\\) to \\(\\$60\\). What is the percentage decrease?",
+            "solution_steps": [
+              "Step 1: Find the difference: \\(\\$80 - \\$60 = \\$20\\).",
+              "Step 2: Divide the difference by the original price: \\(\\frac{20}{80} = 0.25\\).",
+              "Step 3: Multiply by 100: \\(0.25 \\times 100 = 25\\).",
+              "Step 4: Add the percentage sign: 25%."
+            ],
+            "final_answer": "The percentage decrease is 25%."
+          }
+        ]
+      }
+    }
+  ]
+}
+---
